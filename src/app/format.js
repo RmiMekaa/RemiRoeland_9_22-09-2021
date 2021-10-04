@@ -1,4 +1,6 @@
 export const formatDate = (dateStr) => {
+  // Ajout methode dans le cas d'un champs vide
+  if (dateStr == "") return "date inconnue"; 
   const date = new Date(dateStr)
   const ye = new Intl.DateTimeFormat('fr', { year: 'numeric' }).format(date)
   const mo = new Intl.DateTimeFormat('fr', { month: 'short' }).format(date)

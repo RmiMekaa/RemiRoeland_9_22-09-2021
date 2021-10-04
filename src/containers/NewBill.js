@@ -18,7 +18,16 @@ export default class NewBill {
   handleChangeFile = e => {
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length-1]
+    const fileName = filePath[filePath.length-1];
+    const finalDot = fileName.lastIndexOf(".");
+    const extension  = fileName.slice(finalDot+1).toLowerCase();
+    console.log("extension",extension);
+    const valid = [ "jpg", "jpeg", "png"].indexOf(extension) !== -1 ? true : false;
+    if (!valid) {
+      alert("format de fichier invalide");
+      file.value = null;
+    } 
+
     this.firestore
       .storage
       .ref(`justificatifs/${fileName}`)

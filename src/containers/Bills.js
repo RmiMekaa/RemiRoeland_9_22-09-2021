@@ -56,7 +56,13 @@ export default class {
             }
           })
           .filter(bill => bill.email === userEmail)
-          console.log('length', bills.length)
+          // Fix Bug report 1 : ajout methode pour trier les tickets du plus récent au plus ancien
+          bills.sort(function (a, b) {
+            if (a.date > b.date) {return -1};
+            if (a.date < b.date) {return 1};
+            return 0;
+          });
+          // -------------------------------------------------------------------------------------
         return bills
       })
       .catch(error => error)

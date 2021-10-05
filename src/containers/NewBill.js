@@ -7,6 +7,7 @@ export default class NewBill {
     this.document = document
     this.onNavigate = onNavigate
     this.firestore = firestore
+    this.localStorage = localStorage
     const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`)
     formNewBill.addEventListener("submit", this.handleSubmit)
     const file = this.document.querySelector(`input[data-testid="file"]`)
@@ -16,17 +17,19 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate })
   }
   handleChangeFile = e => {
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+    //----FIX FILES FORMAT ISSUE------------------------------------------------------------------------------
+    const fileInput = this.document.querySelector(`input[data-testid="file"]`);
+    const file = fileInput.files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1];
     const finalDot = fileName.lastIndexOf(".");
     const extension  = fileName.slice(finalDot+1).toLowerCase();
-    console.log("extension",extension);
     const valid = [ "jpg", "jpeg", "png"].indexOf(extension) !== -1 ? true : false;
     if (!valid) {
       alert("format de fichier invalide");
-      file.value = null;
+      fileInput.value = [];
     } 
+    //--------------------------------------------------------------------------------------------------------
 
     this.firestore
       .storage
@@ -41,7 +44,7 @@ export default class NewBill {
   handleSubmit = e => {
     e.preventDefault()
     console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
-    const email = JSON.parse(localStorage.getItem("user")).email
+    const email = JSON.parse(this.localStorage.getItem("user")).email
     const bill = {
       email,
       type: e.target.querySelector(`select[data-testid="expense-type"]`).value,

@@ -16,6 +16,9 @@ export default class {
     new Logout({ document, localStorage, onNavigate })
   }
 
+  /**
+   * Redirige vers la page de soumission de ticket
+   */
   handleClickNewBill = e => {
     this.onNavigate(ROUTES_PATH['NewBill'])
   }
@@ -33,39 +36,33 @@ export default class {
       JSON.parse(localStorage.getItem('user')).email : ""
     if (this.firestore) {
       return this.firestore
-      .bills()
-      .get()
-      .then(snapshot => {
-        const bills = snapshot.docs
-          .map(doc => {
-            try {
-              return {
-                ...doc.data(),
-                date: formatDate(doc.data().date),
-                status: formatStatus(doc.data().status)
+        .bills()
+        .get()
+        .then(snapshot => {
+          const antiChrono = (a, b) => (new Date(b.date) - new Date(a.date));
+          const bills = snapshot.docs
+            .filter(bill => bill.data().email === userEmail)
+            .map(doc => {
+              try {
+                return {
+                  ...doc.data(),
+                  date: formatDate(doc.data().date),
+                  status: formatStatus(doc.data().status)
+                }
+              } catch (e) {
+                // if for some reason, corrupted data was introduced, we manage here failing formatDate function
+                // log the error and return unformatted date in that case
+                console.log(e, 'for', doc.data())
+                return {
+                  ...doc.data(),
+                  date: doc.data().date,
+                  status: formatStatus(doc.data().status)
+                }
               }
-            } catch(e) {
-              // if for some reason, corrupted data was introduced, we manage here failing formatDate function
-              // log the error and return unformatted date in that case
-              console.log(e,'for',doc.data())
-              return {
-                ...doc.data(),
-                date: doc.data().date,
-                status: formatStatus(doc.data().status)
-              }
-            }
-          })
-          .filter(bill => bill.email === userEmail)
-          // Fix Bug report 1 : ajout methode pour trier les tickets du plus récent au plus ancien
-          bills.sort(function (a, b) {
-            if (a.date > b.date) {return -1};
-            if (a.date < b.date) {return 1};
-            return 0;
-          });
-          // -------------------------------------------------------------------------------------
-        return bills
-      })
-      .catch(error => error)
+            })
+          return bills.sort(antiChrono)
+        })
+        .catch(error => error)
     }
   }
 }

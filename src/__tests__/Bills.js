@@ -4,12 +4,12 @@ import { bills } from "../fixtures/bills.js"
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
-    //test("Then bill icon in vertical layout should be highlighted", () => {
-    //  const html = BillsUI({ data: []})
-    //  document.body.innerHTML = html
-    //  //to-do write expect expression
-    //  
-    //})
+    test("Then bill icon in vertical layout should be highlighted", () => {
+      const html = BillsUI({ data: []})
+      document.body.innerHTML = html
+      //to-do write expect expression
+      
+    })
     test("Then bills should be ordered from earliest to latest", () => {
       const html = BillsUI({ data: bills })
       document.body.innerHTML = html;
@@ -17,6 +17,18 @@ describe("Given I am connected as an employee", () => {
       const antiChrono = (a, b) => (new Date(b) - new Date(a));
       const datesSorted = [...dates].sort(antiChrono);
       expect(dates).toEqual(datesSorted)
+    })
+    test('if there is a loading parameter, then it should display a loading page', () => {
+      const html = BillsUI({ loading: true })
+      document.body.innerHTML = html
+      const loading = screen.getByText("Loading...")
+      expect(loading).toBeTruthy()
+    })
+    test('if there is an error parameter, then it should display an error page', () => {
+      const html = BillsUI({ error: 'error message' })
+      document.body.innerHTML = html
+      const error = screen.getByTestId('error-message')
+      expect(error).toBeTruthy()
     })
   })
 })

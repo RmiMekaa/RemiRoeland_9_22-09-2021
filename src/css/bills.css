@@ -109,3 +109,8 @@ tr td:nth-of-type(5) {
   font-weight: 500;
   color: #0E5AE5;
 }
+
+#modaleFile > div > div > div.modal-body > div > img {
+  max-width: 100%;
+  max-height: 100%;
+}

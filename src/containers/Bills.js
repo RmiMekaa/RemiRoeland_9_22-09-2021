@@ -23,6 +23,13 @@ export default class {
     this.onNavigate(ROUTES_PATH['NewBill'])
   }
 
+  /**
+   * [handleClickIconEye description]
+   *
+   * @param   {HTMLElement}  icon  L'icône oeil
+   *
+   * @return  {void}        [return description]
+   */
   handleClickIconEye = (icon) => {
     const billUrl = icon.getAttribute("data-bill-url")
     const imgWidth = Math.floor($('#modaleFile').width() * 0.5)
@@ -43,6 +50,7 @@ export default class {
           const bills = snapshot.docs
             .filter(bill => bill.data().email === userEmail)
             .map(doc => {
+              console.log(doc.data());
               try {
                 return {
                   ...doc.data(),

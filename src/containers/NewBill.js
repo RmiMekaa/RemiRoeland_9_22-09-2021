@@ -24,11 +24,19 @@ export default class NewBill {
     const fileName = filePath[filePath.length-1];
     const finalDot = fileName.lastIndexOf(".");
     const extension  = fileName.slice(finalDot+1).toLowerCase();
-    const valid = [ "jpg", "jpeg", "png"].indexOf(extension) !== -1 ? true : false;
+    const valid = ["jpg", "jpeg", "png"].indexOf(extension) !== -1 ? true : false;
     if (!valid) {
-      alert("format de fichier invalide");
       fileInput.value = [];
+      let container = this.document.getElementById('fileInputContainer');
+      let message = this.document.createElement('span');
+      message.setAttribute('id', 'errorMessage');
+      message.innerText = "Format de fichier non valide (formats acceptés : jpg, jpeg, png)";
+      container.appendChild(message);
+      return;
     } 
+    let errorMessage = this.document.getElementById('errorMessage');
+    errorMessage.remove();
+
     //--------------------------------------------------------------------------------------------------------
 
     this.firestore

@@ -5,16 +5,17 @@ import Bills from "../containers/Bills.js"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import firebase from "../__mocks__/firebase"
 import { ROUTES } from "../constants/routes"
+import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom'
 
-describe("Given I am connected as an employee and I am on Bills page ", () => {
+describe("Given I am connected as an employee and I am on Bills page", () => {
 
   beforeAll(() => {
     Object.defineProperty(window, 'localStorage', { value: localStorageMock })
     window.localStorage.setItem('user', JSON.stringify({type: 'Employee'}))
   })
 
-  test("Then bills should be ordered from earliest to latest", () => {
+  test("When bills are loaded, then they should be ordered from earliest to latest", () => {
     const html = BillsUI({ data: bills })
     document.body.innerHTML = html;
     const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
@@ -22,28 +23,24 @@ describe("Given I am connected as an employee and I am on Bills page ", () => {
     const datesSorted = [...dates].sort(antiChrono);
     expect(dates).toEqual(datesSorted)
   })
-  test('if there is a loading parameter, then it should display a loading page', () => {
+  test('When a loading parameter is given, then it should display a loading page', () => {
     const html = BillsUI({ loading: true })
     document.body.innerHTML = html
     const loading = screen.getByText("Loading...")
     expect(loading).toBeTruthy()
   })
-  test('if there is an error parameter, then it should display an error page', () => {
+  test('When an error parameter is given, then it should display an error page', () => {
     const html = BillsUI({ error: 'error message' })
     document.body.innerHTML = html
     const error = screen.getByTestId('error-message')
     expect(error).toBeTruthy()
   })
   test('When I click on the new bill button, then it should render the new bill form', () => {
-    // 1- Afficher la page Bills
-    const html = BillsUI({ data: bills })
-    document.body.innerHTML = html
-    // 2- Mock navigation
+    document.body.innerHTML = BillsUI({ data: bills })
     const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname }) }
-    // 3- Création instance Bills
-    const bill = new Bills({ document, onNavigate, firestore: null, bills, localStorage: window.localStorage })
+    const billsInstance = new Bills({ document, onNavigate, firestore: null, bills, localStorage: window.localStorage })
     // 4- Simulation methode handleClickNewBill
-    const handleClickNewBill = jest.fn(bill.handleClickNewBill)
+    const handleClickNewBill = jest.fn(billsInstance.handleClickNewBill)
     // 5- Simulation Click Event 
     const button = screen.getByTestId("btn-new-bill")
     button.addEventListener('click', handleClickNewBill)
@@ -53,29 +50,20 @@ describe("Given I am connected as an employee and I am on Bills page ", () => {
     expect(screen.getByTestId('form-new-bill')).toBeInTheDocument();
   })
   test('When I click on the eye icon, then it should display a modal', () => {
-    // 1- Afficher la page Bills
-    const html = BillsUI({ data: bills })
-    document.body.innerHTML = html
-    // 2- Mock navigation
+    document.body.innerHTML = BillsUI({ data: bills })
     const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname }) }
-    // 3- Création instance Bills
-    const bill = new Bills({ document, onNavigate, firestore: null, bills, localStorage: window.localStorage })
-    // 4- Simulation methode handleClickNewBill
-    $.fn.modal = jest.fn() // ?
-    const handleClickIconEye = jest.fn((e) => bill.handleClickIconEye(eyeIcon[0]))
-    // 5- Simulation Click Event       
-    const eyeIcon = screen.getAllByTestId("icon-eye")
-    eyeIcon[0].addEventListener('click', handleClickIconEye)
-    fireEvent.click(eyeIcon[0])
-    // 6-Vérifications
+    const billsInstance = new Bills({ document, onNavigate, firestore: null, localStorage: null })
+    $.fn.modal = jest.fn()
+    const handleClickIconEye = jest.spyOn(billsInstance, 'handleClickIconEye')
+    const eyesIcons = screen.getAllByTestId('icon-eye')
+    userEvent.click(eyesIcons[0])
     expect(handleClickIconEye).toHaveBeenCalled()
-    //expect(screen.getAllByText('Justificatif')).toBeTruthy()      //Marche même si la modale est en display: none
-    //expect(screen.getByTestId('proofModal')).toBeInTheDocument()  //Marche même si la modale est en display: none
-  }) // ↑ TO FIX
+    const modal = screen.getByRole('dialog', { hidden: true })
+    expect(modal).toBeVisible()
+  })
 })
 
-
-//GET BILLS INTEGRATION TEST
+//GET INTEGRATION TEST
 describe("Given I am connected as an employee ", () => {
   describe("When I go to Bills Page", () => {
     test('fetches bills from mock API GET', async () => {

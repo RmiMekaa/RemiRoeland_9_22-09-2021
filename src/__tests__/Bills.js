@@ -74,7 +74,8 @@ describe("Given I am connected as an employee and I am on Bills page ", () => {
   }) // ↑ TO FIX
 })
 
-// GET BILLS INTEGRATION TEST
+
+//GET BILLS INTEGRATION TEST
 describe("Given I am connected as an employee ", () => {
   describe("When I go to Bills Page", () => {
     test('fetches bills from mock API GET', async () => {

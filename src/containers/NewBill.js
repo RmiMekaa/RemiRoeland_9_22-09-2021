@@ -17,7 +17,6 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate })
   }
   handleChangeFile = e => {
-    //----FIX FILES FORMAT ISSUE------------------------------------------------------------------------------
     const fileInput = this.document.querySelector(`input[data-testid="file"]`);
     const file = fileInput.files[0]
     const filePath = e.target.value.split(/\\/g)
@@ -25,19 +24,13 @@ export default class NewBill {
     const finalDot = fileName.lastIndexOf(".");
     const extension  = fileName.slice(finalDot+1).toLowerCase();
     const valid = ["jpg", "jpeg", "png"].indexOf(extension) !== -1 ? true : false;
+    let errorMessage = this.document.getElementById('errorMessage');
+    errorMessage.removeAttribute('class');
     if (!valid) {
-      fileInput.value = [];
-      let container = this.document.getElementById('fileInputContainer');
-      let message = this.document.createElement('span');
-      message.setAttribute('id', 'errorMessage');
-      message.innerText = "Format de fichier non valide (formats acceptés : jpg, jpeg, png)";
-      container.appendChild(message);
+      errorMessage.className = 'showError';
+      e.target.value = '';
       return;
     } 
-    let errorMessage = this.document.getElementById('errorMessage');
-    errorMessage.remove();
-
-    //--------------------------------------------------------------------------------------------------------
 
     this.firestore
       .storage
@@ -71,6 +64,7 @@ export default class NewBill {
   }
 
   // not need to cover this function by tests
+  /* istanbul ignore next */
   createBill = (bill) => {
     if (this.firestore) {
       this.firestore

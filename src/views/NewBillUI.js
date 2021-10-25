@@ -56,6 +56,7 @@ export default () => {
                   <div class="col-half" id="fileInputContainer">
                     <label for="file" class="bold-label">Justificatif</label>
                     <input required type="file" class="form-control blue-border" data-testid="file" />
+                    <span id="errorMessage">Format de fichier non valide</span>
                   </div>
                 </div>
             </div>

@@ -16,35 +16,51 @@ export default class NewBill {
     this.fileName = null
     new Logout({ document, localStorage, onNavigate })
   }
-  handleChangeFile = e => {
-    const fileInput = this.document.querySelector(`input[data-testid="file"]`);
-    const file = fileInput.files[0]
-    const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length-1];
+  
+  checkFileValidity(file) {
+    const fileName = file.name;
     const finalDot = fileName.lastIndexOf(".");
-    const extension  = fileName.slice(finalDot+1).toLowerCase();
-    const valid = ["jpg", "jpeg", "png"].indexOf(extension) !== -1 ? true : false;
-    let errorMessage = this.document.getElementById('errorMessage');
-    errorMessage.removeAttribute('class');
-    if (!valid) {
-      errorMessage.className = 'showError';
-      e.target.value = '';
-      return;
-    } 
+    const fileExtension = fileName.slice(finalDot+1).toLowerCase();
+    const isValid = ["jpg", "jpeg", "png"].indexOf(fileExtension) !== -1 ? true : false;
 
-    this.firestore
-      .storage
-      .ref(`justificatifs/${fileName}`)
-      .put(file)
-      .then(snapshot => snapshot.ref.getDownloadURL())
-      .then(url => {
-        this.fileUrl = url
-        this.fileName = fileName
-      })
+    return isValid;
   }
+  setErrorMessage() {
+    const errorMessage = this.document.getElementById('errorMessage');
+    errorMessage.innerHTML='Format de fichier non valide'
+  }
+  resetErrorMessage() {
+    const errorMessage = this.document.getElementById('errorMessage');
+    errorMessage.innerHTML=''
+  }
+
+  handleChangeFile = e => {
+    const file = e.target.files[0]
+    const isValid = this.checkFileValidity(file);
+    if (!isValid) {
+      this.setErrorMessage()
+      e.target.value = '';
+    } else {
+      const errorMessage = this.document.getElementById('errorMessage');
+      if (errorMessage.innerHTML !== '') this.resetErrorMessage(); 
+
+      this.firestore
+        .storage
+        .ref(`justificatifs/${file.name}`)
+        .put(file)
+        .then(snapshot => snapshot.ref.getDownloadURL())
+        .then(url => {
+          this.fileUrl = url
+          this.fileName = file.name
+        })  
+    }
+  }
+
+  /**
+   * Créé un nouvel objet Bill contenant les informations saisies dans les inputs
+   */
   handleSubmit = e => {
     e.preventDefault()
-    console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
     const email = JSON.parse(this.localStorage.getItem("user")).email
     const bill = {
       email,

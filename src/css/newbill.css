@@ -63,11 +63,11 @@ textarea:focus, input:focus, select:focus {
 }
 
 #errorMessage {
-  visibility: hidden;
+  display: inline;
   color: red;
   font-weight: 500;
 }
 
-#errorMessage.showError {
+/* #errorMessage.showError {
   visibility: visible;
-}
+} */

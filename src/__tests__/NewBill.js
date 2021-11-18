@@ -10,15 +10,15 @@ import '@testing-library/jest-dom/extend-expect';
 //Setup
 const html = NewBillUI()
 document.body.innerHTML = html
-const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname }) }
 Object.defineProperty(window, 'localStorage', { value: localStorageMock })
 window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }))
+const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname }) }
 const newBill = new NewBill({ document, onNavigate, firestore: null, localStorage: window.localStorage })
 
 describe("Given I am connected as an employee and I am on New Bill page", () => {
 
   describe("When I upload a file with invalid format", () => {
-    beforeAll(()=> {
+    test("Then it should display an error message", () => {
       const fileInput = screen.getByTestId("file")
       const invalidFile = new File(['text'], 'text.txt', { type: "plain/text" })
       const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e))
@@ -28,15 +28,13 @@ describe("Given I am connected as an employee and I am on New Bill page", () => 
             files: [invalidFile],
         }
       })
-    })
-    test("Then it should display an error message", () => {
       const errorMessage = document.querySelector('#errorMessage');
       expect(errorMessage.innerHTML).toBe('Format de fichier non valide')
     })
   })
 
   describe("When I upload a valid file", () => {   
-    beforeAll(()=> {
+    test("Then it should not display an error message", () => {
       const fileInput = screen.getByTestId("file")
       const validFile = new File(['image'], 'image.jpg', { type: "image.jpeg" })
       const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e))
@@ -46,13 +44,6 @@ describe("Given I am connected as an employee and I am on New Bill page", () => 
             files: [validFile],
         }
       })
-    })
-    test("Then file should be accepted", () => {
-      const fileInput = screen.getByTestId("file")
-      expect(fileInput.files.length).toBe(1)
-      expect(fileInput.files[0].name).toBe('image.jpg');
-    })
-    test("Then it should not display an error message", () => {
       const errorMessage = document.querySelector('#errorMessage');
       expect(errorMessage.innerHTML).toBe('')
     })
@@ -74,7 +65,6 @@ describe("Given I am connected as an employee and I am on New Bill page", () => 
         fileUrl: "https://images.com/image.jpg",
         status: 'pending'
       }
-
       //↓ Simulate filling form
       screen.getByTestId('expense-type').value = bill.type
       screen.getByTestId('expense-name').value = bill.name

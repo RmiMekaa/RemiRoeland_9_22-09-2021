@@ -40,6 +40,7 @@ export default class NewBill {
     if (!isValid) {
       this.setErrorMessage()
       e.target.value = '';
+      console.log(e.target.files.length);
     } else {
       const errorMessage = this.document.getElementById('errorMessage');
       if (errorMessage.innerHTML !== '') this.resetErrorMessage(); 

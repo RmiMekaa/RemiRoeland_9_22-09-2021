@@ -25,27 +25,11 @@ describe("Given I am connected as an employee and I am on New Bill page", () => 
       fileInput.addEventListener('change', handleChangeFile)
       fireEvent.change(fileInput, {
         target: {
-            files: [invalidFile],
+          files: [invalidFile],
         }
       })
       const errorMessage = document.querySelector('#errorMessage');
       expect(errorMessage.innerHTML).toBe('Format de fichier non valide')
-    })
-  })
-
-  describe("When I upload a valid file", () => {   
-    test("Then it should not display an error message", () => {
-      const fileInput = screen.getByTestId("file")
-      const validFile = new File(['image'], 'image.jpg', { type: "image.jpeg" })
-      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e))
-      fileInput.addEventListener('change', handleChangeFile)
-      fireEvent.change(fileInput, {
-        target: {
-            files: [validFile],
-        }
-      })
-      const errorMessage = document.querySelector('#errorMessage');
-      expect(errorMessage.innerHTML).toBe('')
     })
   })
 

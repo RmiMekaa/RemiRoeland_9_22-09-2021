@@ -46,7 +46,7 @@ export const card = (bill) => {
   const firstName = firstAndLastNames.includes('.') ?
     firstAndLastNames.split('.')[0] : ''
   const lastName = firstAndLastNames.includes('.') ?
-  firstAndLastNames.split('.')[1] : firstAndLastNames
+    firstAndLastNames.split('.')[1] : firstAndLastNames
 
   return (`
     <div class='bill-card' id='open-bill${bill.id}' data-testid='open-bill${bill.id}'>
@@ -147,10 +147,8 @@ export default class {
    * @return  {void}         [return description]
    */
   handleEditTicket(e, bill, bills) {
-    if (this.active !== undefined) return
     if (this.counter === undefined || this.id !== bill.id) this.counter = 0
     if (this.id === undefined || this.id !== bill.id) this.id = bill.id
-    this.active = true;
     if (this.counter % 2 === 0) {
       bills.forEach(b => {
         $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
@@ -158,7 +156,7 @@ export default class {
       $(`#open-bill${bill.id}`).css({ background: '#2A2B35' })
       $('.dashboard-right-container div').html(DashboardFormUI(bill))
       $('.vertical-navbar').css({ height: '150vh' })
-      this.counter ++
+      this.counter++
     } else {
       $(`#open-bill${bill.id}`).css({ background: '#0D5AE5' })
 
@@ -166,14 +164,13 @@ export default class {
         <div id="big-billed-icon"> ${BigBilledIcon} </div>
       `)
       $('.vertical-navbar').css({ height: '120vh' })
-      this.counter ++
+      this.counter++
     }
-    setTimeout(()=>{ delete this.active }, 100);
     $('#icon-eye-d').click(this.handleClickIconEye)
     $('#btn-accept-bill').click((e) => this.handleAcceptSubmit(e, bill))
     $('#btn-refuse-bill').click((e) => this.handleRefuseSubmit(e, bill))
   }
-  
+
 
   handleAcceptSubmit = (e, bill) => {
     const newBill = {
@@ -208,26 +205,23 @@ export default class {
     if (this.counter === undefined || this.index !== index) this.counter = 0
     if (this.index === undefined || this.index !== index) this.index = index
     if (this.counter % 2 === 0) { // = si le compteur est pair
-      $(`#arrow-icon${this.index}`).css({ transform: 'rotate(0deg)'})
+      $(`#arrow-icon${this.index}`).css({ transform: 'rotate(0deg)' })
       $(`#status-bills-container${this.index}`)
         .html(cards(filteredBills(bills, getStatus(this.index))))
-      this.counter ++
+      this.counter++
     } else {
-      $(`#arrow-icon${this.index}`).css({ transform: 'rotate(90deg)'})
+      $(`#arrow-icon${this.index}`).css({ transform: 'rotate(90deg)' })
       $(`#status-bills-container${this.index}`)
         .html("")
-      this.counter ++
+      this.counter++
     }
 
     bills.forEach(bill => {
       $(`#open-bill${bill.id}`).click((e) => {
-        this.handleEditTicket(e, bill, bills)
-      })
-      // $(`#open-bill${bill.id}`).click((e) => {
-      //   if (e.target.closest(`#status-bills-container${index}`)) {
-      //     this.handleEditTicket(e, bill, bills);
-      //   }
-      // });
+        if (e.target.closest(`#status-bills-container${index}`)) {
+          this.handleEditTicket(e, bill, bills);
+        }
+      });
     })
 
     return bills
@@ -237,30 +231,30 @@ export default class {
   getBillsAllUsers = () => {
     if (this.firestore) {
       return this.firestore
-      .bills()
-      .get()
-      .then(snapshot => {
-        const bills = snapshot.docs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          date: doc.data().date,
-          status: doc.data().status
-        }))
-        return bills
-      })
-      .catch(console.log)
+        .bills()
+        .get()
+        .then(snapshot => {
+          const bills = snapshot.docs
+            .map(doc => ({
+              id: doc.id,
+              ...doc.data(),
+              date: doc.data().date,
+              status: doc.data().status
+            }))
+          return bills
+        })
+        .catch(console.log)
     }
   }
-    
+
   // not need to cover this function by tests
   updateBill = (bill) => {
     if (this.firestore) {
-    return this.firestore
-      .bill(bill.id)
-      .update(bill)
-      .then(bill => bill)
-      .catch(console.log)
+      return this.firestore
+        .bill(bill.id)
+        .update(bill)
+        .then(bill => bill)
+        .catch(console.log)
     }
   }
 }

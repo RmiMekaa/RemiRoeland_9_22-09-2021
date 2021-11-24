@@ -147,10 +147,10 @@ export default class {
    * @return  {void}         [return description]
    */
   handleEditTicket(e, bill, bills) {
-    //if (this.active !== undefined) return
+    if (this.active !== undefined) return
     if (this.counter === undefined || this.id !== bill.id) this.counter = 0
     if (this.id === undefined || this.id !== bill.id) this.id = bill.id
-    //this.active = true;
+    this.active = true;
     if (this.counter % 2 === 0) {
       bills.forEach(b => {
         $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
@@ -168,7 +168,7 @@ export default class {
       $('.vertical-navbar').css({ height: '120vh' })
       this.counter ++
     }
-    //setTimeout(()=>{ delete this.active }, 100);
+    setTimeout(()=>{ delete this.active }, 100);
     $('#icon-eye-d').click(this.handleClickIconEye)
     $('#btn-accept-bill').click((e) => this.handleAcceptSubmit(e, bill))
     $('#btn-refuse-bill').click((e) => this.handleRefuseSubmit(e, bill))
@@ -220,14 +220,14 @@ export default class {
     }
 
     bills.forEach(bill => {
-      // $(`#open-bill${bill.id}`).click((e) => {
-      //   this.handleEditTicket(e, bill, bills)
-      // })
       $(`#open-bill${bill.id}`).click((e) => {
-        if (e.target.closest(`#status-bills-container${index}`)) {
-          this.handleEditTicket(e, bill, bills);
-        }
-      });
+        this.handleEditTicket(e, bill, bills)
+      })
+      // $(`#open-bill${bill.id}`).click((e) => {
+      //   if (e.target.closest(`#status-bills-container${index}`)) {
+      //     this.handleEditTicket(e, bill, bills);
+      //   }
+      // });
     })
 
     return bills

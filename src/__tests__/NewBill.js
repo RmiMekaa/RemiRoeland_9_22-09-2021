@@ -28,8 +28,6 @@ describe("Given I am connected as an employee and I am on New Bill page", () => 
           files: [invalidFile],
         }
       })
-      expect(fileInput.files[0]).toStrictEqual(invalidFile)
-      expect(fileInput.files).toHaveLength(1)
       const errorMessage = document.querySelector('#errorMessage');
       expect(errorMessage.innerHTML).toBe('Format de fichier non valide')
     })
